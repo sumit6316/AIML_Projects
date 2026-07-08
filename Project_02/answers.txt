@@ -1,0 +1,33 @@
+PART-A
+Q1. At max_depth=1, is the model biased or high-variance? Why?
+
+At max_depth=1, the model is high-bias (underfitting). With only a single split, the tree can only divide the data into two regions and predict a constant value in each. This is far too simple to capture the non-linear sine-wave pattern in the data. Because the model is too rigid, it makes large, systematic errors regardless of which training data we use — that is the definition of high bias. The Train MSE and Test MSE are both large.
+
+Q2. At max_depth=None, what happens to Train MSE vs Test MSE? What does this indicate?
+
+At max_depth=None, the tree is fully grown. The Train MSE drops to nearly 0 because the tree memorises every training point (each leaf contains exactly one sample). However, the Test MSE is much higher than the Train MSE. This large gap indicates overfitting (high variance) — the model learned the training noise rather than the true underlying pattern, so it generalises poorly to new data.
+
+
+PART-B
+Q3. Why does Test MSE improve/plateau as `n_estimators` increases, while Train MSE stays roughly flat?
+
+Each additional tree in the forest reduces the variance of the ensemble prediction. When there are very few trees (e.g., 1–5), individual tree predictions are noisy, so the average is also noisy → higher Test MSE. As we add more trees, the averaged prediction becomes more stable and closer to the true function → Test MSE falls. Eventually the law of large numbers kicks in and the benefit of adding even more trees diminishes → Test MSE plateaus.
+
+Train MSE stays roughly flat because each individual tree still fits the training data well (fully grown), so the training prediction is always very close to the true training label regardless of how many trees are averaged.
+
+
+Q4. Does adding more trees ever cause the Random Forest to overfit more?
+
+No. Adding more trees never causes the Random Forest to overfit more. Here is why: the final prediction is the average of individual tree predictions. As we average more and more independent (or weakly correlated) estimates, the variance of the average decreases or stays the same — it cannot increase. Mathematically, if each tree has variance , the average of B trees has variance = variance/B (when trees are uncorrelated). So more trees = lower or equal variance = less overfitting, never more.
+
+PART-C
+Q5. Comparing the two charts — which shows more spread (variance)? Which is closer to the true function (lower bias)?
+
+-Chart 1 (30 individual trees) shows much more spread/disagreement between predictions. The 30 blue curves vary wildly at many points — especially near the edges where data is sparse. This large spread is the visual definition of **high variance**: the model output changes a lot depending on which bootstrap sample was used for training.
+
+-Chart 2 (Random Forest) shows a single smooth, stable prediction that tracks the true red sine curve closely. The green line has lower variance and is closer to the true function on average, meaning it has similar or lower bias while significantly reducing variance.
+
+
+Q6. Paragraph — Why does Random Forest reduce variance?
+
+A single fully-grown Decision Tree is extremely sensitive to the particular training set it sees: change a few training points and the tree can produce a completely different prediction. This sensitivity is what we call high variance. Random Forest tackles this problem using bagging (Bootstrap Aggregating): it trains many trees, each on a different random bootstrap sample of the training data, and then averages their predictions. Because each tree makes its errors somewhat independently (they were trained on different data), those errors are largely uncorrelated. When you average many uncorrelated noisy signals, the noise tends to cancel out while the true signal reinforces itself. Mathematically, if each tree has variance , the average of B trees has variance/B (for uncorrelated trees). So, the more trees we include, the lower the prediction variance, and the Random Forest converges to a stable, smooth prediction that is much closer to the true underlying function — without meaningfully increasing bias.

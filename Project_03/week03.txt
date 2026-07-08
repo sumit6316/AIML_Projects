@@ -1,0 +1,75 @@
+1. What are ADRs?
+   Adverse Drug Reactions (ADRs) are harmful or unintended responses
+   to a medication taken at normal doses. Example: a patient taking
+   aspirin develops internal bleeding.
+
+2. Why is ADR prediction important?
+   ADRs cause patient harm, hospitalizations, and even deaths.
+   Predicting them early helps doctors take preventive action,
+   saving lives and reducing healthcare costs.
+
+3. Why is this a classification problem?
+   We are predicting a category (severity level like mild, moderate,
+   severe) — not a continuous number. So it's classification.
+
+4. Binary vs Multi-class:
+   - Binary: 2 classes (e.g., Severe vs Not Severe)
+   - Multi-class: 3+ classes (e.g., Mild / Moderate / Severe)
+   Here we treat it as multi-class (3 levels).
+
+5. Why Decision Trees?
+   - Easy to understand and visualize
+   - Works with both numeric and categorical data
+   - No need for feature scaling
+   - Shows which features matter most
+
+
+
+Feature Selection Justification:
+- hospitalized, death: directly indicate severity
+- reaction_count: more reactions = more severe
+- age, age_group: older patients may react worse
+- gender, drug_form, country: demographic/drug factors
+- weight: affects drug metabolism
+
+
+Why F1-Score is useful for imbalanced datasets:
+- Accuracy can be misleading when one class dominates.
+  Example: If 90% is "Severe", a dumb model that always predicts
+  "Severe" gets 90% accuracy but fails for Mild/Moderate.
+- F1-Score balances Precision and Recall, giving a fair measure
+  across all classes, especially important in medical predictions
+  where missing a case (low recall) can be dangerous.
+
+Most Influential Features:
+- hospitalized and death: strongest predictors of severity
+- reaction_count: more reactions = more severe
+- age: older patients face higher risk
+- drug_form and weight: moderate influence
+
+Interpretation
+  1. Challenges in healthcare data cleaning:
+   - Many missing values (patient records are often incomplete)
+   - Inconsistent coding of drug names and conditions
+   - Imbalanced classes (severe cases are rare)
+   - Sensitive data with privacy restrictions
+
+2. Most useful visualization:
+   The Correlation Heatmap - it quickly shows which features
+   are most related to severity, guiding feature selection.
+
+3. Decision Tree Overfitting:
+   Without limits, trees memorize training data perfectly but
+   fail on new data (high variance). This is overfitting.
+
+4. Reducing Overfitting:
+   - Limit max_depth (e.g., depth=5)
+   - Set min_samples_split and min_samples_leaf
+   - Use cross-validation to pick best parameters
+   - Prune the tree after training
+
+5. Would Random Forest perform better?
+   Yes, very likely. Random Forest builds many trees on random
+   subsets of data and averages predictions. This reduces
+   variance and avoids overfitting — a key weakness of a single
+   Decision Tree.
